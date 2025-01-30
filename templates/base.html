@@ -18,16 +18,54 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   </head>
 
   <!-- <body class="d-flex flex-column h-100" style="background-image: url('{{ url_for('static', filename='image/fundohomeb.jpeg') }}'); background-size: cover; background-repeat: no-repeat; height: 100px;"> -->
     <body class="d-flex flex-column h-100">
 
+      <div class="div-flutuante-login">
+        {% for message in messages %}
+          {% if message.tags == 'success' %}
+            <script>
+              document.addEventListener("DOMContentLoaded", function() {
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'Sucesso',
+                      text: '{{ message }}',
+                      confirmButtonText: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fechar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',        
+                        customClass: {
+                          confirmButton: 'btn btn-primary'  
+                        },
+                      buttonsStyling: false
+                  });
+              });
+            </script>
+          {% elif message.tags == 'error' %}
+            <script>
+              document.addEventListener("DOMContentLoaded", function() {
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Verificar',
+                      text: '{{ message }}',
+                      confirmButtonText: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fechar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',        
+                        customClass: {
+                          confirmButton: 'btn btn-primary' 
+                        },
+                      buttonsStyling: false
+                  });
+              });
+            </script>
+          {% endif %}
+        {% endfor %}
+      </div>
+
 
     <header>
       <!-- <img src="{{ url_for('static', filename='image/topo.png') }}" alt="" width="50" > -->
       <!-- Navbar fixa -->
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav class="navbar navbar-expand-lg navbar-dark " style="background-color: rgb(54, 54, 54);">
         
         <a class="navbar-brand" href="/home">
           <img src="{{ url_for('static', filename='image/chef.png') }}" alt="logomarca" width="40" >
@@ -121,7 +159,7 @@
     <!-- Remove the container if you want to extend the Footer to full width. -->
 
     
-    <footer class="footer mt-auto py-3 text-center text-white" style="background-color: #f1f1f1;">
+    <footer class="footer mt-auto py-0 text-center text-white" style="background-color: #f1f1f1;">
       <!-- Grid container -->
       <div class="container pt-4">
         <!-- Section: Social media -->

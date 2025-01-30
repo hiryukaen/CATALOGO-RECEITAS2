@@ -15,9 +15,47 @@
     <!-- Estilos customizados para esse template -->
     <link href="{{ url_for('static', filename='bootstrap-5.3.3-dist/css/signin.css') }}" rel="stylesheet">
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   </head>
 
   <body class="text-center" style="background-image: url('{{ url_for('static', filename=imagem_fundo) }}'); background-size: cover; background-repeat: no-repeat; height: 100px;">
+
+    <div class="div-flutuante-login">
+      {% for message in messages %}
+        {% if message.tags == 'success' %}
+          <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: '{{ message }}',
+                    confirmButtonText: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fechar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',        
+                      customClass: {
+                        confirmButton: 'btn btn-primary'  
+                      },
+                    buttonsStyling: false
+                });
+            });
+          </script>
+        {% elif message.tags == 'error' %}
+          <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Verificar',
+                    text: '{{ message }}',
+                    confirmButtonText: '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Fechar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',        
+                      customClass: {
+                        confirmButton: 'btn btn-primary' 
+                      },
+                    buttonsStyling: false
+                });
+            });
+          </script>
+        {% endif %}
+      {% endfor %}
+    </div>
 
 
     <form class="form-signin">
