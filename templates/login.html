@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../../../favicon.ico">
+    <link rel="icon" href="{{ url_for('static', filename='image/chef.png') }}">
 
     <title>Template de login, usando Bootstrap.</title>
 
@@ -21,7 +21,7 @@
 
 
     <form class="form-signin">
-      <img class="mb-4" src="{{ url_for('static', filename='image/receitasfaceislogo.png') }}" alt="" width="200">
+      <img class="mb-4" src="{{ url_for('static', filename='image/chef.png') }}" alt="" width="250">
       <!-- <h1 class="h3 mb-3 font-weight-normal">Login</h1> -->
       <label for="email" class="sr-only">Endereço de email</label>
       <input type="email" id="email" class="form-control" placeholder="Email" required autofocus>

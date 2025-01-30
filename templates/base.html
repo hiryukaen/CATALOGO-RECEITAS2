@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="{{ url_for('static', filename='image/receitasfaceislogo.png') }}">
+    <link rel="icon" href="{{ url_for('static', filename='image/chef.png') }}">
 
     <title>{% block title %}{% endblock %}</title>
     
@@ -30,7 +30,7 @@
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         
         <a class="navbar-brand" href="/home">
-          <img src="{{ url_for('static', filename='image/receitasfaceislogo.png') }}" alt="logomarca" width="40" >
+          <img src="{{ url_for('static', filename='image/chef.png') }}" alt="logomarca" width="40" >
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#conteudoNavbarSuportado" aria-controls="conteudoNavbarSuportado" aria-expanded="false" aria-label="Alterna navegação">
           <span class="navbar-toggler-icon"></span>
@@ -55,7 +55,7 @@
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="/receita">
                   <i class="fa-solid fa-utensils"></i>
-                  &nbsp;&nbsp;Nova Receita
+                  &nbsp;&nbsp;Receita
                 </a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="todasreceita">
@@ -68,6 +68,7 @@
                 </a>
               </div>
             </li>
+            &nbsp;&nbsp;&nbsp;
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Ajuste
@@ -84,10 +85,11 @@
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="/contato">
                   <i class="fa-solid fa-address-book"></i>
-                  &nbsp;&nbsp;Contatos
+                  &nbsp;&nbsp;Minhas Redes
                 </a>
               </div>
             </li>
+            &nbsp;&nbsp;&nbsp;
             <li class="nav-item">
               <a class="nav-link" href="/sair">Sair</a>
             </li>
