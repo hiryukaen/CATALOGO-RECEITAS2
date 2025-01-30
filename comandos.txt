@@ -1,0 +1,4 @@
+export FLASK_DEBUG=1 (macOS/Linux)
+set FLASK_DEBUG=1 (Windows)
+flask run
+pip freeze > requirements.txt

@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
+import random
 
 app = Flask(__name__)
 
@@ -24,7 +25,52 @@ def init_db():
     conn.commit()
     conn.close()
 
-init_db()
+###init_db()
+
+@app.route('/')
+def login():
+    imagens = [
+        'image/fundoazul.png',
+        'image/fundoazulclaro.png',
+        'image/fundocaderno.png',
+        'image/fundofarinha.png',
+        'image/fundoblack.jpeg',
+        'image/fundoroxo.jpeg',
+        'image/fundopardo.jpeg',
+        'image/fundopardoitens.jpeg',
+        'image/fundomadeira.jpeg',
+        'image/fundobraco.jpeg',
+        'image/fundoverde.png',
+        'image/fundoitens.png'
+    ]
+    imagem_escolhida = random.choice(imagens)
+    return render_template('login.html', imagem_fundo=imagem_escolhida)
+
+
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+
+@app.route('/usuario')
+def usuario():
+    return render_template('usuario.html')
+
+
+@app.route('/contato')
+def contato():
+    return render_template('contato.html')
+
+
+@app.route('/receita')
+def receita():
+    return render_template('receita.html')
+
+
+@app.route('/categoria')
+def categoria():
+    return render_template('categoria.html')
+
 
 @app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():

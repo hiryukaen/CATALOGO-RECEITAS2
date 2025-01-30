@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Usuário
+{% endblock %}
+
+{% block content %}
+<br>
+<h2>Usuário</h2>
+<hr>
+<p>
+    <div class="btn-group" role="group" aria-label="Exemplo básico">
+        <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-xmark"></i>&nbsp;&nbsp;Cancelar</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-user"></i>&nbsp;&nbsp;Novo Usuário</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-list"></i>&nbsp;&nbsp;Listar Usuários</button>
+    </div>
+</p>
+
+<form>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="nome">Nome Completo</label>
+            <input type="text" class="form-control" id="nome" placeholder="Nome Completo">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputEmail4">Email</label>
+            <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputPassword4">Senha</label>
+            <input type="password" class="form-control" id="inputPassword4" placeholder="Senha">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputPassword4">Confirmar Senha</label>
+            <input type="password" class="form-control" id="inputPassword4" placeholder="Confirmar Senha">
+        </div>
+    </div>
+    <div class="form-group">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="gridCheck">
+        <label class="form-check-label" for="gridCheck">
+          Ativar usuário
+        </label>
+      </div>
+    </div>
+    <br>
+    <hr>
+    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>&nbsp;Gravar Usuário</button>
+    <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i>&nbsp;Cancelar</button>
+  </form>
+  <br>
+{% endblock %}
