@@ -13,19 +13,19 @@ app = Flask(__name__)
 #    return psycopg2.connect(DATABASE_URL)
 
 # Inicializar o banco de dados
-def init_db():
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            nome TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            senha TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
+# def init_db():
+#     conn = connect_db()
+#     cursor = conn.cursor()
+#     cursor.execute('''
+#         CREATE TABLE IF NOT EXISTS users (
+#             id SERIAL PRIMARY KEY,
+#             nome TEXT NOT NULL,
+#             email TEXT NOT NULL UNIQUE,
+#             senha TEXT NOT NULL
+#         )
+#     ''')
+#     conn.commit()
+#     conn.close()
 
 ###init_db()
 
