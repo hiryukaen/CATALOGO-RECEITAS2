@@ -1,14 +1,18 @@
 import psycopg2
 from psycopg2 import sql
 
-# String de Conexão Banco de Dados PostgreSQL (render)
+# Internal database url (render)
 DATABASE_URL = "postgresql://postgresql_usuario_user:sLsZ0dqBk1d7GAvsXzFTOyLIxnLbF2eN@dpg-cu9c183tq21c73ahm080-a/postgresql_usuario"
+
+# External database url
+DATABASE_URL_EX = "postgresql://postgresql_usuario_user:sLsZ0dqBk1d7GAvsXzFTOyLIxnLbF2eN@dpg-cu9c183tq21c73ahm080-a.oregon-postgres.render.com/postgresql_usuario"
+
 
 class PostgreSQLCRUD:
     def __init__(self):
         """Inicia a conexão com o banco de dados PostgreSQL."""
         try:
-            self.connection = psycopg2.connect(DATABASE_URL)
+            self.connection = psycopg2.connect(DATABASE_URL_EX)
             self.cursor = self.connection.cursor()
             print("Conexão bem-sucedida!")
         except Exception as e:
