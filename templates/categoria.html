@@ -5,18 +5,16 @@
 {% endblock %}
 
 {% block content %}
-<br>
-<h2>Categoria de Receita</h2>
-<hr>
-<p>
+
+<form method="POST" class="mt-4 p-4 border rounded shadow">
+    <h2>Categoria de Receita</h2>
+    <hr>
     <div class="btn-group" role="group" aria-label="Exemplo básico">
         <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-xmark"></i>&nbsp;&nbsp;Cancelar</button>
         <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-plus"></i>&nbsp;&nbsp;Nova Categoria</button>
         <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-list"></i>&nbsp;&nbsp;Listar Categorias</button>
     </div>
-</p>
-
-<form method="POST">
+    <p></p>
     <div class="form-row">
         <div class="form-group col-md-12">
             <label for="categoria-receita">Categoria</label>

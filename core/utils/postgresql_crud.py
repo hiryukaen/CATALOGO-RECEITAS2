@@ -4,7 +4,7 @@ from psycopg2 import sql
 # Internal database url (render)
 DATABASE_URL = "postgresql://postgresql_usuario_user:sLsZ0dqBk1d7GAvsXzFTOyLIxnLbF2eN@dpg-cu9c183tq21c73ahm080-a/postgresql_usuario"
 
-# External database url
+# External database url (render)
 DATABASE_URL_EX = "postgresql://postgresql_usuario_user:sLsZ0dqBk1d7GAvsXzFTOyLIxnLbF2eN@dpg-cu9c183tq21c73ahm080-a.oregon-postgres.render.com/postgresql_usuario"
 
 
