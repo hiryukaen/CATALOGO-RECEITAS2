@@ -17,7 +17,7 @@ app = Flask(__name__)
 #     conn = connect_db()
 #     cursor = conn.cursor()
 #     cursor.execute('''
-#         CREATE TABLE IF NOT EXISTS users (
+#         CREATE TABLE IF NOT EXISTS usuario (
 #             id SERIAL PRIMARY KEY,
 #             nome TEXT NOT NULL,
 #             email TEXT NOT NULL UNIQUE,
@@ -83,7 +83,7 @@ def cadastro():
 
         try:
             db = PostgreSQLCRUD()
-            db.create("users", nome = nome, email = email, senha = senha)
+            db.create("usuario", nome = nome, email = email, senha = senha)
 
             # conn = connect_db()
             # cursor = conn.cursor()
