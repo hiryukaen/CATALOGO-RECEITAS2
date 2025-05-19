@@ -54,6 +54,11 @@ def home():
     return render_template('home.html')
 
 
+@app.route('/sair')
+def sair():
+    return render_template('home.html')
+
+
 @app.route('/usuario')
 def usuario():
     return render_template('usuario.html')
@@ -96,9 +101,7 @@ def cadastro():
 
     return render_template("cadastro.html")
 
-@app.route("/sucesso")
-def sucesso():
-    return "Usuário cadastrado com sucesso!"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
