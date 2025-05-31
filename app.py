@@ -1,10 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import psycopg2
 import random
 
 from core.utils.postgresql_crud import PostgreSQLCRUD
 
+# importamos a classe Usuario
+from core.usuario.usuario import Usuario
+
 app = Flask(__name__)
+app.secret_key = '1234567890abcdef'
 
 # Configuração do banco de dados PostgreSQL
 #DATABASE_URL = "postgresql://postgresql_usuario_user:sLsZ0dqBk1d7GAvsXzFTOyLIxnLbF2eN@dpg-cu9c183tq21c73ahm080-a/postgresql_usuario"
@@ -29,40 +33,69 @@ app = Flask(__name__)
 
 ###init_db()
 
-@app.route('/')
+imagens = [
+    'image/fundoazul.png',
+    'image/fundoazulclaro.png',
+    'image/fundocaderno.png',
+    'image/fundofarinha.png',
+    'image/fundoblack.jpeg',
+    'image/fundoroxo.jpeg',
+    'image/fundopardo.jpeg',
+    'image/fundopardoitens.jpeg',
+    'image/fundomadeira.jpeg',
+    'image/fundobraco.jpeg',
+    'image/fundoverde.png',
+    'image/fundoitens.png'
+]
+
+bd_usuario = {
+    "email": "anderson@gmail.com",
+    "senha": "123"
+}
+
+@app.route('/', methods=['GET', 'POST'])
 def login():
-    imagens = [
-        'image/fundoazul.png',
-        'image/fundoazulclaro.png',
-        'image/fundocaderno.png',
-        'image/fundofarinha.png',
-        'image/fundoblack.jpeg',
-        'image/fundoroxo.jpeg',
-        'image/fundopardo.jpeg',
-        'image/fundopardoitens.jpeg',
-        'image/fundomadeira.jpeg',
-        'image/fundobraco.jpeg',
-        'image/fundoverde.png',
-        'image/fundoitens.png'
-    ]
-    imagem_escolhida = random.choice(imagens)
-    return render_template('login.html', imagem_fundo=imagem_escolhida)
+    if request.method == 'GET':
+        imagem_escolhida = random.choice(imagens)
+        return render_template('login.html', imagem_fundo=imagem_escolhida)
+    elif request.method == 'POST':
+        email = request.form['email'] 
+        senha = request.form['senha']
+        if email == bd_usuario['email'] and senha == bd_usuario['senha']:
+            session['usuario'] = email
+            return redirect(url_for('home'))
 
 
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    if 'usuario' in session:
+        return render_template('home.html')
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/sair')
 def sair():
-    return render_template('home.html')
+    session.pop('usuario', None)
+    return redirect(url_for('login'))
 
 
-@app.route('/usuario')
+@app.route('/usuario', methods=['GET', 'POST'])
 def usuario():
-    return render_template('usuario.html')
-
+    if 'usuario' in session:
+        if request.method == 'GET':
+            return render_template('usuario.html')
+        elif request.method == 'POST':
+            nome = request.form['nome']
+            email = request.form['email']
+            senha = request.form['senha']
+            conf_senha = request.form['conf-senha']
+            situacao = request.form['situacao']
+            
+            if senha == conf_senha:
+                obj_usuario = Usuario(nome, email, senha, situacao)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/contato')
 def contato():
