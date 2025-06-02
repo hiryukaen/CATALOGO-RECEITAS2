@@ -6,13 +6,13 @@
 
 {% block content %}
 
-<form>
+<form id="form-receita" method="POST">
     <h2>Receita</h2>
     <hr>
     <div class="btn-group" role="group" aria-label="Exemplo básico">
-        <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-xmark"></i>&nbsp;&nbsp;Cancelar</button>
-        <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-utensils"></i>&nbsp;&nbsp;Nova Receita</button>
-        <button type="button" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-list"></i>&nbsp;&nbsp;Listar Receitas</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.location.href='{{ url_for('receita') }}'"><i class="fa-solid fa-xmark"></i>&nbsp;&nbsp;Cancelar</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('form-receita').reset();"><i class="fa-solid fa-utensils"></i>&nbsp;&nbsp;Nova Receita</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.location.href='{{ url_for('listreceita') }}'"><i class="fa-solid fa-list"></i>&nbsp;&nbsp;Listar Receitas</button>
     </div>
     <p></p>
     <div class="form-row">
@@ -39,7 +39,7 @@
 
     <hr>
     <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i>&nbsp;Gravar Receita</button>
-    <button type="button" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i>&nbsp;Cancelar</button>
+    <button type="button" class="btn btn-secondary" onclick="window.location.href='{{ url_for('receita') }}'"><i class="fa-solid fa-xmark"></i>&nbsp;Cancelar</button>
 </form>
 <br>
 {% endblock %}

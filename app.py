@@ -1,38 +1,30 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-import psycopg2
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import random
+from functools import wraps
 
-from core.utils.postgresql_crud import PostgreSQLCRUD
-
-# importamos a classe Usuario
+# Importação do core Usuario e UsuarioService
 from core.usuario.usuario import Usuario
+from core.usuario.usuario_service import UsuarioService
+
+# Importação do core Login e LoginService
+from core.login.login import Login
+from core.login.login_service import LoginService
 
 app = Flask(__name__)
 app.secret_key = '1234567890abcdef'
 
-# Configuração do banco de dados PostgreSQL
-#DATABASE_URL = "postgresql://postgresql_usuario_user:sLsZ0dqBk1d7GAvsXzFTOyLIxnLbF2eN@dpg-cu9c183tq21c73ahm080-a/postgresql_usuario"
+# Decorator para validar a atuenticação do usuário
+# Vc pode utilizar nas rotas que são obrigatórias de autenticação do usuário
+def login_requerido(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'usuario' not in session:
+            flash("Você precisa estar logado para acessar esta página.", "error")
+            return redirect(url_for('login')) 
+        return f(*args, **kwargs)
+    return decorated_function
 
-#def connect_db():
-#    return psycopg2.connect(DATABASE_URL)
-
-# Inicializar o banco de dados
-# def init_db():
-#     conn = connect_db()
-#     cursor = conn.cursor()
-#     cursor.execute('''
-#         CREATE TABLE IF NOT EXISTS usuario (
-#             id SERIAL PRIMARY KEY,
-#             nome TEXT NOT NULL,
-#             email TEXT NOT NULL UNIQUE,
-#             senha TEXT NOT NULL
-#         )
-#     ''')
-#     conn.commit()
-#     conn.close()
-
-###init_db()
-
+# lista de imagens 
 imagens = [
     'image/fundoazul.png',
     'image/fundoazulclaro.png',
@@ -48,92 +40,182 @@ imagens = [
     'image/fundoitens.png'
 ]
 
-bd_usuario = {
-    "email": "anderson@gmail.com",
-    "senha": "123"
-}
-
+# Rota da página login
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         imagem_escolhida = random.choice(imagens)
         return render_template('login.html', imagem_fundo=imagem_escolhida)
+    
     elif request.method == 'POST':
+        # Injeção de Dependências
+        service = LoginService()
+        # pegar os dados do formulário
         email = request.form['email'] 
         senha = request.form['senha']
-        if email == bd_usuario['email'] and senha == bd_usuario['senha']:
+        # criar o objeto
+        obj_login = Login(email, senha)
+
+        try:
+            service.autenticar(obj_login)
             session['usuario'] = email
             return redirect(url_for('home'))
+        except ValueError as e:
+            flash(str(e), "error")
+            return redirect(url_for('login'))
 
 
+# Rota da página home
 @app.route('/home')
+@login_requerido
 def home():
-    if 'usuario' in session:
-        return render_template('home.html')
-    else:
-        return redirect(url_for('login'))
+    return render_template('home.html')
 
 
+
+# Rota para sair do sistema, retorna para página login
 @app.route('/sair')
 def sair():
     session.pop('usuario', None)
     return redirect(url_for('login'))
 
 
-@app.route('/usuario', methods=['GET', 'POST'])
-def usuario():
-    if 'usuario' in session:
-        if request.method == 'GET':
-            return render_template('usuario.html')
-        elif request.method == 'POST':
-            nome = request.form['nome']
-            email = request.form['email']
-            senha = request.form['senha']
-            conf_senha = request.form['conf-senha']
-            situacao = request.form['situacao']
-            
-            if senha == conf_senha:
-                obj_usuario = Usuario(nome, email, senha, situacao)
-    else:
-        return redirect(url_for('login'))
 
-@app.route('/contato')
+# Rota para página usuario
+@app.route('/usuario', methods=['GET', 'POST'])
+@login_requerido
+def usuario():
+    if request.method == 'GET':
+        return render_template('usuario.html')
+    
+    elif request.method == 'POST':
+        # Injeção de Dependências
+        service = UsuarioService()
+
+        # Pegar os dados do formulário web
+        nome = request.form['nome']
+        email = request.form['email']
+        senha = request.form['senha']
+        conf_senha = request.form['conf-senha']
+        situacao = request.form['situacao']
+        
+        if senha == conf_senha:
+            # Cadastrar o usuario
+            try:
+                service.cadastrar_usuario(nome, email, senha, situacao)
+                flash("Usuário cadastrado com sucesso!", "success")
+                return render_template('usuario.html')
+            except ValueError as e:
+                flash(str(e), "error")
+                return render_template('usuario.html')
+        else:
+            # senha nao confere
+            flash("Senha não confere!", "error")
+            return render_template('usuario.html')
+
+
+
+@app.route('/listusuario', methods=['GET'])
+@login_requerido
+def listusuario():
+    # Injeção de Dependências
+    service = UsuarioService()
+    try:
+        usuarios = service.listar_usuarios()
+    except Exception as e:
+        flash(f"Erro ao carregar usuários: {str(e)}", "error")
+        usuarios = []
+    return render_template('list_usuario.html', usuarios=usuarios)
+
+
+
+@app.route('/editar_usuario/<int:id>', methods=['GET', 'POST'])
+@login_requerido
+def editar_usuario(id):
+    # Injeção de Dependências
+    service = UsuarioService()
+    try:
+        usuario = service.obter_usuario_por_id(id)
+    except ValueError:
+        flash("Usuário não encontrado.", "error")
+        return redirect(url_for('listusuario'))
+
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+        conf_senha = request.form.get('conf-senha')
+        situacao = request.form.get('situacao')
+
+        # Validação básica
+        if not nome or not email:
+            flash("Nome e email são obrigatórios.", "error")
+            return render_template('usuario.html', usuario=usuario)
+
+        if senha != conf_senha:
+            flash("Senhas não conferem.", "error")
+            return render_template('usuario.html', usuario=usuario)
+
+        try:
+            service.cadastrar_usuario(nome, email, senha, situacao)
+            flash("Usuário atualizado com sucesso!", "success")
+            return redirect(url_for('listusuario'))
+        except Exception as e:
+            flash(str(e), "error")
+            return render_template('usuario.html', usuario=usuario)
+
+    # GET: exibe o formulário com dados atuais do usuário
+    return render_template('usuario.html', usuario=usuario)
+
+
+@app.route('/excluir_usuario/<int:id>')
+@login_requerido
+def excluir_usuario(id):
+    # Injeção de Dependências
+    service = UsuarioService()
+    try:
+        service.excluir_usuario_por_id(id)
+        flash("Usuário excluído com sucesso!", "success")
+        return redirect(url_for('listusuario'))
+    except ValueError:
+        flash("Usuário não encontrado.", "error")
+        return redirect(url_for('listusuario'))
+
+
+
+# Rota para a página de contato
+@app.route('/contato', methods=['GET', 'POST'])
+@login_requerido
 def contato():
     return render_template('contato.html')
 
 
-@app.route('/receita')
+# Rota para a página receita
+@app.route('/receita', methods=['GET', 'POST'])
+@login_requerido
 def receita():
     return render_template('receita.html')
 
 
-@app.route('/categoria')
+# Rota para a página listreceita
+@app.route('/listreceita', methods=['GET', 'POST'])
+@login_requerido
+def listreceita():
+    return render_template('listreceita.html')
+
+
+# Rota para a página categoria
+@app.route('/categoria', methods=['GET', 'POST'])
+@login_requerido
 def categoria():
     return render_template('categoria.html')
 
 
-@app.route("/cadastro", methods=["GET", "POST"])
-def cadastro():
-    if request.method == "POST":
-        nome = request.form["nome"]
-        email = request.form["email"]
-        senha = request.form["senha"]
-
-        try:
-            db = PostgreSQLCRUD()
-            db.create("usuario", nome = nome, email = email, senha = senha)
-
-            # conn = connect_db()
-            # cursor = conn.cursor()
-            # cursor.execute("INSERT INTO users (nome, email, senha) VALUES (%s, %s, %s)", (nome, email, senha))
-            # conn.commit()
-            # conn.close()
-            return redirect(url_for("sucesso"))
-        except psycopg2.IntegrityError:
-            return "Erro: Email já cadastrado!"
-
-    return render_template("cadastro.html")
-
+# Rota para a página listcategoria
+@app.route('/listcategoria', methods=['GET', 'POST'])
+@login_requerido
+def listcategoria():
+    return render_template('listcategoria.html')
 
 
 if __name__ == "__main__":
