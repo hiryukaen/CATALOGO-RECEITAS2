@@ -10,6 +10,14 @@ from core.usuario.usuario_service import UsuarioService
 from core.login.login import Login
 from core.login.login_service import LoginService
 
+# Importação do core Categoria e CategoriaService
+from core.categoria.categoria import Categoria
+from core.categoria.categoria_service import CategoriaService
+
+# Importação do core Contato e ContatoService
+from core.contato.contato import Contato
+from core.contato.contato_service import ContatoService
+
 app = Flask(__name__)
 app.secret_key = '1234567890abcdef'
 
@@ -79,7 +87,57 @@ def sair():
     session.pop('usuario', None)
     return redirect(url_for('login'))
 
+# Rota para a página categoria
+@app.route('/categoria', methods=['GET', 'POST'])
+@login_requerido
+def categoria():
+    if request.method == 'GET':
+        return render_template('categoria.html')
 
+    elif request.method == 'POST':
+        # Injeção de Dependências
+        service = CategoriaService()
+
+        # Pegar os dados do Formulário
+        nome_cat = request.form['categoria-receita']
+
+        # Reliza o Cadastro no banco de dados
+        try:
+            service.cadastrar_categoria(nome_cat)
+            flash("Categoria cadastrado com sucesso!", "success")
+            return render_template('categoria.html')
+        except ValueError as e:
+            flash(str(e), "error")
+            return render_template('categoria.html')
+
+
+# Rota para a página de contato
+@app.route('/contato', methods=['GET', 'POST'])
+@login_requerido
+def contato():
+    if request.method == 'GET':
+       return render_template('contato.html')
+
+    elif request.method == "POST":
+        # Injeção de Dependências
+        service = ContatoService()
+
+        # Pegar os dados do Formulário
+        nome_face = request.form['facebook']
+        nome_twx = request.form['twx']
+        nome_inst = request.form['instagram']
+        nome_link = request.form['linkedin']
+        nome_git = request.form['github']
+
+        # Reliza o Cadastro no banco de dados
+        try:
+            obj_contato = Contato(1, nome_face, nome_twx, nome_inst, nome_link, nome_git)
+            service.atualizar_ou_inserir(obj_contato)
+            flash("Contato cadastrado com sucesso!", "success")
+            return render_template('contato.html')
+        except ValueError as e:
+            flash(str(e), "error")
+            return render_template('contato.html')
 
 # Rota para página usuario
 @app.route('/usuario', methods=['GET', 'POST'])
@@ -183,13 +241,6 @@ def excluir_usuario(id):
 
 
 
-# Rota para a página de contato
-@app.route('/contato', methods=['GET', 'POST'])
-@login_requerido
-def contato():
-    return render_template('contato.html')
-
-
 # Rota para a página receita
 @app.route('/receita', methods=['GET', 'POST'])
 @login_requerido
@@ -202,13 +253,6 @@ def receita():
 @login_requerido
 def listreceita():
     return render_template('listreceita.html')
-
-
-# Rota para a página categoria
-@app.route('/categoria', methods=['GET', 'POST'])
-@login_requerido
-def categoria():
-    return render_template('categoria.html')
 
 
 # Rota para a página listcategoria
