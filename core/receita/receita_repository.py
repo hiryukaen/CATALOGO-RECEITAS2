@@ -46,3 +46,8 @@ class ReceitaRepository:
         cursor.execute("SELECT * FROM receitas WHERE id = ?", (id,))
         row = cursor.fetchone()
         return Receita(**row) if row else None
+
+    def remover_por_id(self, id):
+        query = 'DELETE FROM receitas WHERE id = ?'
+        self.conn.execute(query, (id,))
+        self.conn.commit()

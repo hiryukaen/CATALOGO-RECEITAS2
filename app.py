@@ -297,7 +297,7 @@ def editar_receita(id):
             return redirect(url_for("listreceita"))
 
 
-    render_template("receita_html", receita=receita, categorias=categorias)
+    return render_template("receita.html", receita=receita, categorias=categorias)
 
 @app.route("/excluir_receita/<int:id>")
 @login_requerido
@@ -308,7 +308,7 @@ def excluir_receita(id):
         flash("Receita excluida com sucesso!", "success")
     except:
         flash("Receita não excluida/encontrada", "error")
-    redirect(url_for("listreceita"))
+    return redirect(url_for("listreceita"))
 
 
 
