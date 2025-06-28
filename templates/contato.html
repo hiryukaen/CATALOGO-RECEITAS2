@@ -12,23 +12,23 @@
     <div class="form-row">
         <div class="form-group col-md-12">
             <label for="facebook">Facebook</label>
-            <input type="text" class="form-control" id="facebook" name="facebook" placeholder="Link do Facebook">
+            <input type="text" class="form-control" id="facebook" name="facebook" placeholder="Link do Facebook" value="{{ contato.facebook if contato else '' }}" >
         </div>
         <div class="form-group col-md-12">
-            <label for="twx">X</label>
-            <input type="text" class="form-control" id="twx" name="twx" placeholder="Link do X">
+            <label for="rede_x">X</label>
+            <input type="text" class="form-control" id="rede_x" name="rede_x" placeholder="Link do X" value="{{ contato.rede_x if contato else '' }}">
         </div>
         <div class="form-group col-md-12">
             <label for="instagram">Instagram</label>
-            <input type="text" class="form-control" id="instagram" name="instagram" placeholder="Link do Instagram">
+            <input type="text" class="form-control" id="instagram" name="instagram" placeholder="Link do Instagram" value="{{ contato.instagram if contato else '' }}">
         </div>
         <div class="form-group col-md-12">
             <label for="linkedin">Linkedin</label>
-            <input type="text" class="form-control" id="linkedin" name="linkedin" placeholder="Link do Linkedin">
+            <input type="text" class="form-control" id="linkedin" name="linkedin" placeholder="Link do Linkedin" value="{{ contato.linkedin if contato else '' }}">
         </div>
         <div class="form-group col-md-12">
             <label for="github">GitHub</label>
-            <input type="text" class="form-control" id="github" name="github" placeholder="Link do GitHub">
+            <input type="text" class="form-control" id="github" name="github" placeholder="Link do GitHub" value="{{ contato.github if contato else '' }}">
         </div>
     </div>
 

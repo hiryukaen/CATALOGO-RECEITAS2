@@ -18,6 +18,10 @@ from core.categoria.categoria_service import CategoriaService
 from core.contato.contato import Contato
 from core.contato.contato_service import ContatoService
 
+# Importação do core Receita e ReceitaService
+from core.receita.receita import Receita
+from core.receita.receita_service import ReceitaService
+
 app = Flask(__name__)
 app.secret_key = '1234567890abcdef'
 
@@ -87,57 +91,7 @@ def sair():
     session.pop('usuario', None)
     return redirect(url_for('login'))
 
-# Rota para a página categoria
-@app.route('/categoria', methods=['GET', 'POST'])
-@login_requerido
-def categoria():
-    if request.method == 'GET':
-        return render_template('categoria.html')
 
-    elif request.method == 'POST':
-        # Injeção de Dependências
-        service = CategoriaService()
-
-        # Pegar os dados do Formulário
-        nome_cat = request.form['categoria-receita']
-
-        # Reliza o Cadastro no banco de dados
-        try:
-            service.cadastrar_categoria(nome_cat)
-            flash("Categoria cadastrado com sucesso!", "success")
-            return render_template('categoria.html')
-        except ValueError as e:
-            flash(str(e), "error")
-            return render_template('categoria.html')
-
-
-# Rota para a página de contato
-@app.route('/contato', methods=['GET', 'POST'])
-@login_requerido
-def contato():
-    if request.method == 'GET':
-       return render_template('contato.html')
-
-    elif request.method == "POST":
-        # Injeção de Dependências
-        service = ContatoService()
-
-        # Pegar os dados do Formulário
-        nome_face = request.form['facebook']
-        nome_twx = request.form['twx']
-        nome_inst = request.form['instagram']
-        nome_link = request.form['linkedin']
-        nome_git = request.form['github']
-
-        # Reliza o Cadastro no banco de dados
-        try:
-            obj_contato = Contato(1, nome_face, nome_twx, nome_inst, nome_link, nome_git)
-            service.atualizar_ou_inserir(obj_contato)
-            flash("Contato cadastrado com sucesso!", "success")
-            return render_template('contato.html')
-        except ValueError as e:
-            flash(str(e), "error")
-            return render_template('contato.html')
 
 # Rota para página usuario
 @app.route('/usuario', methods=['GET', 'POST'])
@@ -241,26 +195,208 @@ def excluir_usuario(id):
 
 
 
+# Rota para a página de contato
+@app.route('/contato', methods=['GET', 'POST'])
+@login_requerido
+def contato():
+    service = ContatoService()
+
+    if request.method == "POST":
+        contato = Contato(
+            id = 1,
+            facebook = request.form.get("facebook"),
+            rede_x = request.form.get("rede_x"),
+            instagram = request.form.get("instagram"),
+            linkedin = request.form.get("linkedin"),
+            github = request.form.get("github")
+        )
+        service.atualizar_ou_inserir(contato)
+        flash("Contatos atualizados com sucesso!", "success")
+        return redirect(url_for("contato"))
+
+    try:
+        contato = service.obter_contato()
+    except ValueError:
+        contato = Contato(
+            id = 1,
+            facebook = "",
+            rede_x = "",
+            instagram = "",
+            linkedin = "",
+            github = ""
+        )
+
+    return render_template('contato.html', contato=contato)
+
+
 # Rota para a página receita
 @app.route('/receita', methods=['GET', 'POST'])
 @login_requerido
 def receita():
-    return render_template('receita.html')
+
+    receita_service = ReceitaService()
+    categoria_service = CategoriaService()
+
+    categorias = categoria_service.listar_categorias()
+
+    if request.method == "POST":
+        nome = request.form.get("nome-receita", "").strip()
+        ingredientes = request.form.get("ingredientes", "").strip()
+        modo_preparo = request.form.get("modo_preparo", "").strip()
+        categoria = request.form.get("categoria", "").strip()
+
+        if not nome or not ingredientes or not modo_preparo or not categoria:
+            flash("Todos os campos são obrigatórios", "error")
+        else:
+            receita = Receita(0, nome, ingredientes, modo_preparo, categoria)
+            receita_service.cadastrar_ou_atualizar(receita)
+            flash("Receita cadastrada com sucesso!", "success")
+
+    return render_template('receita.html', categorias = categorias)
 
 
 # Rota para a página listreceita
 @app.route('/listreceita', methods=['GET', 'POST'])
 @login_requerido
 def listreceita():
-    return render_template('listreceita.html')
+
+    service = ReceitaService()
+    try:
+        receitas = service.listar_receitas()
+    except:
+        receitas = []
+
+    return render_template('list_receita.html', receitas = receitas)
+
+#Rota para editar receita
+@app.route('/editar_receita/<int:id>', methods=['GET', 'POST'])
+@login_requerido
+def editar_receita(id):
+    receita_service = ReceitaService()
+    categoria_service = CategoriaService()
+
+    try:
+        receita = receita_service.obter_receita_por_id(id)
+        categorias = categoria_service.listar_categorias()
+    except:
+        flash("Receita não encontrada", "error")
+        return redirect(url_for("listreceita"))
+
+    if request.method == "POST":
+        nome = request.form.get("nome-receita", "").strip()
+        ingredientes = request.form.get("ingredientes", "").strip()
+        modo_preparo = request.form.get("modo_preparo", "").strip()
+        categoria = request.form.get("categoria", "").strip()
+
+        if not nome or not ingredientes or not modo_preparo or not categoria:
+            flash("Todos os campos são obrigatórios", "error")
+        else:
+            receita = Receita(id, nome, ingredientes, modo_preparo, categoria)
+            receita_service.cadastrar_ou_atualizar(receita)
+            flash("Receita atualizada com sucesso!", "success")
+            return redirect(url_for("listreceita"))
+
+
+    render_template("receita_html", receita=receita, categorias=categorias)
+
+@app.route("/excluir_receita/<int:id>")
+@login_requerido
+def excluir_receita(id):
+    service = ReceitaService()
+    try:
+        service.excluir_receita(id)
+        flash("Receita excluida com sucesso!", "success")
+    except:
+        flash("Receita não excluida/encontrada", "error")
+    redirect(url_for("listreceita"))
+
+
+
+# Rota para a página categoria
+@app.route('/categoria', methods=['GET', 'POST'])
+@login_requerido
+def categoria():
+
+    service = CategoriaService()
+
+    if request.method == "GET":
+        return render_template('categoria.html')
+    elif request.method == "POST":
+        try:
+            nome_categoria = request.form["categoria-receita"]
+            service.cadastrar_categoria(nome_categoria)
+            flash("Categoria cadastrada com sucesso!", "success")
+        except ValueError as e:
+            flash(str(e), "error")
+        return render_template('categoria.html')
 
 
 # Rota para a página listcategoria
 @app.route('/listcategoria', methods=['GET', 'POST'])
 @login_requerido
 def listcategoria():
-    return render_template('listcategoria.html')
+    service = CategoriaService()
+    try:
+        categorias = service.listar_categorias()
+    except Exception as e:
+        flash(str(e),"error")
+        categorias = []
 
+    return render_template('list_categoria.html',categorias=categorias)
+
+
+# Rota para editar categoria
+@app.route('/editar_categoria/<nome_categoria>', methods=['GET', 'POST'])
+@login_requerido
+def editar_categoria(nome_categoria):
+
+    service =  CategoriaService()
+    try:
+        categoria = service.buscar_por_nome(nome_categoria)
+    except ValueError:
+        flash("Categoria não encontrada", "error")
+        return redirect(url_for("listcategoria"))
+
+    if request.method == "POST":
+        nova_categoria = request.form["categoria-receita"]
+        try:
+            service.atualizar_categoria(nome_categoria, nova_categoria)
+            flash("Categoria atualizada com sucesso!", "success")
+            return redirect(url_for("listcategoria"))
+        except Exception as e:
+            flash(str(e), "error")
+
+    return render_template('categoria.html', categoria = categoria)
+
+
+# Rota para excluir categoria
+@app.route('/excluir_categoria/<nome_categoria>')
+@login_requerido
+def excluir_categoria(nome_categoria):
+    service = CategoriaService()
+    try:
+        service.excluir_categoria(nome_categoria)
+        flash("Categoria excluída com sucesso!", "success")
+    except ValueError:
+        flash("Categoria não excluída", "error")
+    return redirect(url_for('listcategoria'))
+
+@app.context_processor
+def inject_social_links():
+    social_links = {}
+
+    service = ContatoService()
+    contato = service.obter_contato()
+    if contato:
+        social_links = {
+            "facebook" : contato.facebook or "",
+            "rede_x" : contato.rede_x or "",
+            "instagram" : contato.instagram or "",
+            "linkedin" : contato.linkedin or "",
+            "github" : contato.github or ""
+        }
+    
+    return {"social_links": social_links}
 
 if __name__ == "__main__":
     app.run(debug=True)
